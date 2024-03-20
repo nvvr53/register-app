@@ -7,6 +7,7 @@ pipeline {
     environment {
 	    APP_NAME = "register-app-pipeline"
             RELEASE = "1.0.0"
+	    DOCKERHUB_CREDENTIALS= credentials('dockerhub')
             DOCKER_USER = "learndevops04"
             DOCKER_PASS = 'dockerhub'
             IMAGE_NAME = "${DOCKER_USER}" + "/" + "${APP_NAME}"
@@ -60,6 +61,12 @@ pipeline {
            steps{                
 	          sh 'sudo docker build -t learndevops04/devops04:$BUILD_NUMBER .'           
               echo 'Build Image Completed'                
+      }           
+    }
+	    stage('Login to Docker Hub') {         
+           steps{                            
+	          sh 'sudo docker login -u DOCKERHUB_CREDENTIALS --password-stdin'                 
+	          echo 'Login Completed'                
       }           
     }
     }	
