@@ -65,7 +65,7 @@ pipeline {
     }
 	    stage('Login to Docker Hub') {         
            steps{                            
-	          sh 'sudo docker login -u DOCKERHUB_CREDENTIALS --password-stdin'                 
+	          sh 'sudo docker login -u DOCKER_USER --password-stdin'                 
 	          echo 'Login Completed'                
       }           
     }
