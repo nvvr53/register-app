@@ -7,11 +7,13 @@ pipeline {
     environment {
 	    APP_NAME = "register-app-pipeline"
             RELEASE = "1.0.0"
-	    DOCKERHUB_CREDENTIALS= credentials('dockerhub')
             DOCKER_USER = "learndevops04"
             DOCKER_PASS = 'dockerhub'
             IMAGE_NAME = "${DOCKER_USER}" + "/" + "${APP_NAME}"
             IMAGE_TAG = "${RELEASE}-${BUILD_NUMBER}"
+	    registry = "learndevops04/devops04"
+            registryCredential = 'dockerhub'
+            dockerImage = ''
     }
     stages{
         stage("Cleanup Workspace"){
@@ -57,17 +59,21 @@ pipeline {
             }
 
         }
-	    stage('Build Docker Image') {         
-           steps{                
-	          sh 'sudo docker build -t learndevops04/devops04:$BUILD_NUMBER .'           
-              echo 'Build Image Completed'                
-      }           
-    }
-	    stage('Login to Docker Hub') {         
-           steps{                            
-	          sh 'sudo docker login -u DOCKER_USER --password-stdin'                 
-	          echo 'Login Completed'                
-      }           
-    }
+      stage('Building our image') {
+           steps{
+                script {
+                    dockerImage = docker.build registry + ":$BUILD_NUMBER"
+                }
+           }
+        }
+        stage('Deploy our image') {
+            steps{
+                 script {
+                      docker.withRegistry( '', registryCredential ) {
+                      dockerImage.push()
+                     }
+                 }
+           }
+      }
     }	
 }
